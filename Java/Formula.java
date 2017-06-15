@@ -1,4 +1,8 @@
-package rad.sys;
+/**
+ * Aviation Formulae Java Edition
+ * Itinial Version: 2015 June
+ * Last Edited: 2017 June
+ */
 
 public class Formula
 {
@@ -685,6 +689,9 @@ public class Formula
 	
 	/**
 	 * Calculates pivot altitude with given velocity.
+	 * Pivotal altitude is the altitude with fixed bank angle, and pivot point
+	 * is stationary.
+	 * Note that this formula works with speed less than 250 knots
 	 * @param v Velocity in knots.
 	 * @return Pivotal altitude in feet.
 	 */
