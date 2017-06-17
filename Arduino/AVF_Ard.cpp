@@ -19,22 +19,22 @@ double AVF_Ard::GetModulus(double x, double y)
 
 double AVF_Ard::AngleToRadian(double degree)
 {
-	return (PI / 180.0) * degree;
+	return (M_PI / 180.0) * degree;
 }
 
 double AVF_Ard::AngleToDegree(double radian)
 {
-	return (180.0 / PI) * radian;
+	return (180.0 / M_PI) * radian;
 }
 
 double AVF_Ard::DistanceToRadian(double nautical)
 {
-	return (PI / (60.0 * 180.0)) * nautical;
+	return (M_PI / (60.0 * 180.0)) * nautical;
 }
 
 double AVF_Ard::DistanceToNautical(double radian)
 {
-	return ((180.0 * 60.0) / PI) * radian;
+	return ((180.0 * 60.0) / M_PI) * radian;
 }
 
 double AVF_Ard::TwoPointGCD(double lat1, double lon1, double lat2, double lon2)
@@ -54,12 +54,12 @@ double AVF_Ard::CourseBearing(double lat1, double lon1, double lat2, double lon2
 	if (sin(lon2 - lon1) < 0)
 		return acos((sin(lat2) - sin(lat1) * cos(d)) / (sin(d) * cos(lat1)));
 	else
-		return 2 * PI - acos((sin(lat2) - sin(lat1) * cos(d)) / (sin(d) * cos(lat1)));
+		return 2 * M_PI - acos((sin(lat2) - sin(lat1) * cos(d)) / (sin(d) * cos(lat1)));
 }
 
 double AVF_Ard::CourseBearingNoGCD(double lat1, double lon1, double lat2, double lon2)
 {
-	return GetModulus(atan2(sin(lon1 - lon2) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon1 - lon2)), 2 * PI);
+	return GetModulus(atan2(sin(lon1 - lon2) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon1 - lon2)), 2 * M_PI);
 }
 
 double AVF_Ard::GetLatPointOnGCD(double lon, double lat1, double lon1, double lat2, double lon2)
@@ -80,7 +80,7 @@ void AVF_Ard::GetCoordinate(double d, double tc, double lat1, double lon1, doubl
 {
 	*lat = asin(sin(lat1) * cos(d) + cos(lat1) * sin(d) * cos(tc));
 	double dlon = atan2(sin(tc) * sin(d) * cos(lat1), cos(d) - sin(lat1) * sin(*lat));
-	*lon = GetModulus(lon1 - dlon + PI, 2 * PI) - PI;
+	*lon = GetModulus(lon1 - dlon + M_PI, 2 * M_PI) - M_PI;
 }
 
 void AVF_Ard::GetIntersectRadial(double lat1, double lon1, double lat2, double lon2, double crs13, double crs23, double* lat, double* lon)
@@ -89,8 +89,8 @@ void AVF_Ard::GetIntersectRadial(double lat1, double lon1, double lat2, double l
 	double crs12 = CourseBearing(lat1, lon1, lat2, lon2);
 	double crs21 = CourseBearing(lat2, lon2, lat1, lon1);
 
-	double ang1 = GetModulus(crs13 - crs12 + PI, 2. * PI) - PI;
-	double ang2 = GetModulus(crs21 - crs23 + PI, 2. * PI) - PI;
+	double ang1 = GetModulus(crs13 - crs12 + M_PI, 2. * M_PI) - M_PI;
+	double ang2 = GetModulus(crs21 - crs23 + M_PI, 2. * M_PI) - M_PI;
 
 	if (sin(ang1) == 0 && sin(ang2) == 0)
 	{
@@ -126,8 +126,8 @@ void AVF_Ard::GetXParallel(double lat1, double lon1, double lat2, double lon2, d
 	else
 	{
 		double dlon = acos(C / sqrt((A * A) + (B * B)));
-		*lon31 = GetModulus(lon1 + dlon + lon + PI, 2 * PI) - PI;
-		*lon32 = GetModulus(lon1 - dlon + lon + PI, 2 * PI) - PI;
+		*lon31 = GetModulus(lon1 + dlon + lon + M_PI, 2 * M_PI) - M_PI;
+		*lon32 = GetModulus(lon1 - dlon + lon + M_PI, 2 * M_PI) - M_PI;
 	}
 }
 
@@ -188,14 +188,14 @@ void AVF_Ard::GetApproxFlatPolarCoord(double lat1, double lon1, double lat2, dou
 	double dstN = R1 * (lat2 - lat1);
 	double dstE = R2 * cos(lat1) * (lon2 - lon1);
 
-	*bearing = GetModulus(atan2(dstE, dstN), 2 * PI);
+	*bearing = GetModulus(atan2(dstE, dstN), 2 * M_PI);
 	*distance = sqrt((dstN * dstN) + (dstE * dstE));
 }
 
 void AVF_Ard::GetWindData(double crs, double hdg, double tas, double gs, double* lat, double* lon)
 {
 	*lat = crs + atan2(tas * sin(hdg - crs), tas * cos(hdg - crs) - gs);
-	*lat = GetModulus(*lat, 2 * PI);
+	*lat = GetModulus(*lat, 2 * M_PI);
 	*lon = sqrt(pow(tas - gs, 2) + 4 * tas * gs * pow(sin((hdg - crs) / 2), 2));
 }
 
@@ -210,7 +210,7 @@ void AVF_Ard::GetObjectHDGGSWind(double crs, double tas, double ws, double wd, d
 	else
 	{
 		*heading = crs + asin(swc);
-		*heading = GetModulus(*heading, 2 * PI);
+		*heading = GetModulus(*heading, 2 * M_PI);
 
 		*speed = tas * sqrt(1 - (swc * swc)) - ws * cos(wd - crs);
 		if (*speed < 0)
@@ -226,7 +226,7 @@ void AVF_Ard::GetObjectGSCRSWind(double hdg, double tas, double ws, double wd, d
 	double wca = atan2(ws * sin(hdg - wd), tas - wd * cos(hdg - wd));
 	if (ws < tas)
 		wca = asin((ws / *gs) * sin(hdg - wd));
-	*cb = GetModulus(hdg + wca, 2.0 * PI);
+	*cb = GetModulus(hdg + wca, 2.0 * M_PI);
 }
 
 void AVF_Ard::GetHWXW(double ws, double wd, double hdg, double* hw, double* xw)
@@ -363,7 +363,7 @@ double AVF_Ard::GetStandardBankAngle(double v)
 	return 57.3 * atan(v / 362.1);
 }
 
-double AVF_Ard::GetPivotAlt(double v)
+double AVF_Ard::GetM_PIvotAlt(double v)
 {
 	return (v * v) / 11.23;
 }
